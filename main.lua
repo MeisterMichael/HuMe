@@ -56,7 +56,7 @@ local function onTilt( event )
 
 	local data_point = {}
 	data_point['device_name']				= 'humeapp'
-	data_point['device_id']					= 'test1'
+	data_point['device_id']					= 'mike'
 	data_point['logged_at']					= os.date( "%Y-%m-%dT%H:%M:%SZ%Z" )
 	data_point['time_delta']				= time_delta
 	-- data_point['date']						= nil
