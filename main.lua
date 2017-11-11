@@ -27,6 +27,8 @@ local angle_zaxis = 0.0
 
 local time_delta = 0.0
 
+local sum_time_delta = nil
+
 local xGravityLabel = display.newText( "xGravity:", 10, 15, native.systemFontBold, 12 )
 local yGravityLabel = display.newText( "yGravity:", 10, 31, native.systemFontBold, 12 )
 local zGravityLabel = display.newText( "zGravity:", 10, 47, native.systemFontBold, 12 )
@@ -47,7 +49,14 @@ local function onTilt( event )
 	acceleration_yaxis = event.yGravity -- positive up, negative down
 	acceleration_zaxis = event.zGravity
 
+	if (sum_time_delta == nil) then
+
+		sum_time_delta = os.time( os.date( '*t' ) )
+
+	end
+
 	time_delta = event.deltaTime
+	sum_time_delta = sum_time_delta + time_delta
 
     xGravityText.text = acceleration_xaxis
     yGravityText.text = acceleration_yaxis
@@ -57,7 +66,8 @@ local function onTilt( event )
 	local data_point = {}
 	data_point['device_name']				= 'humeapp'
 	data_point['device_id']					= 'mike'
-	data_point['logged_at']					= os.date( "%Y-%m-%dT%H:%M:%SZ%Z" )
+	data_point['timestamp']					= sum_time_delta
+	-- data_point['logged_at']					= os.date( "%Y-%m-%dT%H:%M:%SZ%Z" )
 	data_point['time_delta']				= time_delta
 	-- data_point['date']						= nil
 	-- data_point['time']						= nil
