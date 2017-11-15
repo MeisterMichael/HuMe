@@ -13,21 +13,11 @@ local zRotationCorrected = 0
 local data_point_cache = {}
 local data_point_flush = {}
 
-local angular_velocity_xaxis = 0.0
-local angular_velocity_yaxis = 0.0
-local angular_velocity_zaxis = 0.0
-
-local acceleration_xaxis = 0.0
-local acceleration_yaxis = 0.0
-local acceleration_zaxis = 0.0
-
-local angle_xaxis = 0.0
-local angle_yaxis = 0.0
-local angle_zaxis = 0.0
-
 local time_delta = 0.0
+local time_start = nil
+local time_delta_sum = 0
 
-local sum_time_delta = nil
+local last_data_point = nil
 
 local xGravityLabel = display.newText( "xGravity:", 10, 15, native.systemFontBold, 12 )
 local yGravityLabel = display.newText( "yGravity:", 10, 31, native.systemFontBold, 12 )
@@ -45,18 +35,16 @@ local function round( f, n )
 end
 
 local function onTilt( event )
-	acceleration_xaxis = event.xGravity -- positive right, negative left
-	acceleration_yaxis = event.yGravity -- positive up, negative down
-	acceleration_zaxis = event.zGravity
-
-	if (sum_time_delta == nil) then
-
-		sum_time_delta = os.time( os.date( '*t' ) )
-
-	end
+	local acceleration_xaxis = event.xGravity -- positive right, negative left
+	local acceleration_yaxis = event.yGravity -- positive up, negative down
+	local acceleration_zaxis = event.zGravity
 
 	time_delta = event.deltaTime
-	sum_time_delta = sum_time_delta + time_delta
+	time_delta_sum = time_delta_sum + time_delta
+
+	if (time_start == nil) then
+		time_start = os.time( os.date( '*t' ) )
+	end
 
     xGravityText.text = acceleration_xaxis
     yGravityText.text = acceleration_yaxis
@@ -64,22 +52,42 @@ local function onTilt( event )
 	timeDeltaText.text = time_delta
 
 	local data_point = {}
-	data_point['device_name']				= 'humeapp'
-	data_point['device_id']					= 'mike'
-	data_point['timestamp']					= sum_time_delta
-	-- data_point['logged_at']					= os.date( "%Y-%m-%dT%H:%M:%SZ%Z" )
-	data_point['time_delta']				= time_delta
-	-- data_point['date']						= nil
-	-- data_point['time']						= nil
-	data_point['acceleration_xaxis']		= acceleration_xaxis
-	data_point['acceleration_yaxis']		= acceleration_yaxis
-	data_point['acceleration_zaxis']		= acceleration_zaxis
+
+	if (last_data_point == nil) then
+		last_data_point = data_point
+	end
+
+	data_point['device_name']					= 'humeapp'
+	data_point['device_id']						= 'mike'
+	data_point['time_start']					= time_start
+	data_point['time_now']						= time_start + time_delta_sum
+	data_point['time_delta_sum']				= time_delta_sum
+	data_point['time_delta']					= time_delta
+	data_point['acceleration_xaxis']			= acceleration_xaxis
+	data_point['acceleration_yaxis']			= acceleration_yaxis
+	data_point['acceleration_zaxis']			= acceleration_zaxis
+	data_point['acceleration_xaxis_delta']		= acceleration_xaxis - ( last_data_point['acceleration_xaxis'] )
+	data_point['acceleration_yaxis_delta']		= acceleration_yaxis - ( last_data_point['acceleration_yaxis'] )
+	data_point['acceleration_zaxis_delta']		= acceleration_zaxis - ( last_data_point['acceleration_zaxis'] )
+	data_point['acceleration_xaxis_delta_sum']	= 0.0
+	data_point['acceleration_yaxis_delta_sum']	= 0.0
+	data_point['acceleration_zaxis_delta_sum']	= 0.0
+	data_point['acceleration_xaxis_delta_sum']	= last_data_point['acceleration_xaxis_delta_sum'] + data_point['acceleration_xaxis_delta']
+	data_point['acceleration_yaxis_delta_sum']	= last_data_point['acceleration_yaxis_delta_sum'] + data_point['acceleration_yaxis_delta']
+	data_point['acceleration_zaxis_delta_sum']	= last_data_point['acceleration_zaxis_delta_sum'] + data_point['acceleration_zaxis_delta']
+	data_point['acceleration_xaxis_corner']		= ( last_data_point['acceleration_xaxis_delta_sum'] > 0.0 and data_point['acceleration_xaxis_delta_sum'] <= 0.0 ) or ( last_data_point['acceleration_xaxis_delta_sum'] <= 0.0 and data_point['acceleration_xaxis_delta_sum'] > 0.0 )
+	data_point['acceleration_yaxis_corner']		= ( last_data_point['acceleration_yaxis_delta_sum'] > 0.0 and data_point['acceleration_yaxis_delta_sum'] <= 0.0 ) or ( last_data_point['acceleration_yaxis_delta_sum'] <= 0.0 and data_point['acceleration_yaxis_delta_sum'] > 0.0 )
+	data_point['acceleration_zaxis_corner']		= ( last_data_point['acceleration_zaxis_delta_sum'] > 0.0 and data_point['acceleration_zaxis_delta_sum'] <= 0.0 ) or ( last_data_point['acceleration_zaxis_delta_sum'] <= 0.0 and data_point['acceleration_zaxis_delta_sum'] > 0.0 )
+
+
 	data_point['angular_velocity_xaxis']	= angular_velocity_xaxis
 	data_point['angular_velocity_yaxis']	= angular_velocity_yaxis
 	data_point['angular_velocity_zaxis']	= angular_velocity_zaxis
 	-- data_point['angle_xaxis']				= angle_xaxis
 	-- data_point['angle_yaxis']				= angle_yaxis
 	-- data_point['angle_zaxis']				= angle_zaxis
+
+	last_data_point = data_point
 
 	table.insert(data_point_cache, data_point)
 
