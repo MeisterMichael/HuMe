@@ -75,9 +75,9 @@ local function onTilt( event )
 	data_point['acceleration_xaxis_delta_sum']	= last_data_point['acceleration_xaxis_delta_sum'] + data_point['acceleration_xaxis_delta']
 	data_point['acceleration_yaxis_delta_sum']	= last_data_point['acceleration_yaxis_delta_sum'] + data_point['acceleration_yaxis_delta']
 	data_point['acceleration_zaxis_delta_sum']	= last_data_point['acceleration_zaxis_delta_sum'] + data_point['acceleration_zaxis_delta']
-	data_point['acceleration_xaxis_corner']		= ( last_data_point['acceleration_xaxis_delta_sum'] > 0.0 and data_point['acceleration_xaxis_delta_sum'] <= 0.0 ) or ( last_data_point['acceleration_xaxis_delta_sum'] <= 0.0 and data_point['acceleration_xaxis_delta_sum'] > 0.0 )
-	data_point['acceleration_yaxis_corner']		= ( last_data_point['acceleration_yaxis_delta_sum'] > 0.0 and data_point['acceleration_yaxis_delta_sum'] <= 0.0 ) or ( last_data_point['acceleration_yaxis_delta_sum'] <= 0.0 and data_point['acceleration_yaxis_delta_sum'] > 0.0 )
-	data_point['acceleration_zaxis_corner']		= ( last_data_point['acceleration_zaxis_delta_sum'] > 0.0 and data_point['acceleration_zaxis_delta_sum'] <= 0.0 ) or ( last_data_point['acceleration_zaxis_delta_sum'] <= 0.0 and data_point['acceleration_zaxis_delta_sum'] > 0.0 )
+	data_point['acceleration_xaxis_corner']		= ( last_data_point['acceleration_xaxis_delta'] > 0.0 and data_point['acceleration_xaxis_delta'] <= 0.0 ) or ( last_data_point['acceleration_xaxis_delta'] <= 0.0 and data_point['acceleration_xaxis_delta'] > 0.0 )
+	data_point['acceleration_yaxis_corner']		= ( last_data_point['acceleration_yaxis_delta'] > 0.0 and data_point['acceleration_yaxis_delta'] <= 0.0 ) or ( last_data_point['acceleration_yaxis_delta'] <= 0.0 and data_point['acceleration_yaxis_delta'] > 0.0 )
+	data_point['acceleration_zaxis_corner']		= ( last_data_point['acceleration_zaxis_delta'] > 0.0 and data_point['acceleration_zaxis_delta'] <= 0.0 ) or ( last_data_point['acceleration_zaxis_delta'] <= 0.0 and data_point['acceleration_zaxis_delta'] > 0.0 )
 
 
 	data_point['angular_velocity_xaxis']	= angular_velocity_xaxis
